@@ -5,7 +5,7 @@
 [![PyPI version](https://badge.fury.io/py/mppbar.svg)](https://badge.fury.io/py/mppbar)
 [![python](https://img.shields.io/badge/python-3.9-teal)](https://www.python.org/downloads/)
 
-The mppbar module provides a convenient way to scale execution of a function across multiple input values by distributing the input across a number of background processes, it displays the execution status of each background process using a **progress bar**; the MPpbar class is a subclass of [MPmq](https://github.com/soda480/mpmq). The primary benefit of using `mppbar` is that the target function requires minimal modification (if at all). The progress bar is setup and updated through the interception of the log messages contained within the function. The log messages in the function must use f-string style interpretation.
+The mppbar module provides a convenient way to scale execution of a function across multiple input values by distributing the input across a number of background processes, it displays the execution status of each background process using a **progress bar**; the MPpbar class is a subclass of [MPmq](https://github.com/soda480/mpmq). The primary benefit of using `mppbar` is that the target function requires minimal modification (if at all). The progress bar is setup and updated through the interception of the log messages contained within the function. The log messages in the function must use f-string style formatting.
 
 ### Installation
 ```bash
