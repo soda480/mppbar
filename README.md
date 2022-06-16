@@ -37,6 +37,9 @@ number then execution will be queued and executed to ensure that this concurrenc
 #### [example1](https://github.com/soda480/mppbar/blob/main/examples/example1.py)
 
 Distribute work across multiple processes executing concurrently and each displays a progress bar showing its execution status.
+
+<details><summary>Example1 Code</summary>
+
 ```Python
 from mppbar import MPpbar
 import time, names, random, logging
@@ -66,11 +69,16 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+</details>
+
 ![example1](https://raw.githubusercontent.com/soda480/mppbar/main/docs/images/example1.gif)
 
 #### [example2](https://github.com/soda480/mppbar/blob/main/examples/example2.py)
 
 Distribute work across multiple processes but only a subset are executing concurrently and each displays a progress bar showing its execution status. Useful if you can only afford to run a few background processes concurrently.
+
+<details><summary>Example2 Code</summary>
+
 ```Python
 from mppbar import MPpbar
 import time, names, random, logging
@@ -103,11 +111,16 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+</details>
+
 ![example2](https://raw.githubusercontent.com/soda480/mppbar/main/docs/images/example2.gif)
 
 #### [example3](https://github.com/soda480/mppbar/blob/main/examples/example3.py)
 
 Distribute alot of work across a small set of processes using a thread-safe queue, each process get work off the queue until there is no more work, all processes reuse a progress bar to show its execution status. Useful if you have alot of data to distribute across a small set of workers.
+
+<details><summary>Example3 Code</summary>
+
 ```Python
 from mppbar import MPpbar
 import time, names, random, logging
@@ -158,6 +171,8 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+</details>
+
 ![example3](https://raw.githubusercontent.com/soda480/mppbar/main/docs/images/example3.gif)
 
 
