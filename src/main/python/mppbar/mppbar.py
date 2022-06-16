@@ -54,7 +54,7 @@ class MPpbar(MPmq):
             self._progress_bars[offset].reset()
         elif message == 'reset-mppbar-complete':
             for progress_bar in self._progress_bars:
-                progress_bar._complete = True
+                progress_bar.complete = True
         else:
             self._progress_bars[offset].match(message)
             self._print_progress_bar(offset)

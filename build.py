@@ -15,7 +15,7 @@ name = 'mppbar'
 authors = [Author('Emilio Reyes', 'soda480@gmail.com')]
 summary = 'A multi-processing enabled progress bar.'
 url = 'https://github.com/soda480/mppbar'
-version = '0.1.0'
+version = '0.1.1'
 default_task = [
     'clean',
     'analyze',
