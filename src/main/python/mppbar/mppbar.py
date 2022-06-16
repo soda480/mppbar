@@ -1,10 +1,8 @@
 import re
 import sys
 import logging
-
+from colorama import Cursor, init as colorama_init
 import cursor
-from colorama import init as colorama_init
-from colorama import Cursor
 from mpmq import MPmq
 from progress1bar import ProgressBar
 
@@ -22,7 +20,7 @@ class MPpbar(MPmq):
         self.regex = regex
         self.fill = fill
         # call parent constructor
-        super(MPpbar, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         colorama_init()
         self._current = 0
         self._create_progress_bars()
@@ -31,7 +29,7 @@ class MPpbar(MPmq):
         """ return message from top of message queue
             override parent class method
         """
-        message = super(MPpbar, self).get_message()
+        message = super().get_message()
         if message['offset'] is None:
             # parse offset from the message
             match = re.match(r'^#(?P<offset>\d+)-(?P<message>.*)$', message['message'], re.M)
@@ -41,8 +39,7 @@ class MPpbar(MPmq):
                     'control': None,
                     'message': match.group('message')
                 }
-            else:
-                logger.debug(f'unable to match offset in message {message}')
+            logger.debug(f'unable to match offset in message {message}')
         return message
 
     def process_message(self, offset, message):
@@ -50,7 +47,7 @@ class MPpbar(MPmq):
             override parent class method
         """
         if offset is None:
-            logger.warn(f'unable to write {message} line to terminal because offset is None')
+            logger.warning(f'unable to write {message} line to terminal because offset is None')
             return
         if message == 'reset-mppbar':
             logger.debug(f'resetting progress bar at offset {offset}')
@@ -70,7 +67,7 @@ class MPpbar(MPmq):
         self._hide_cursor()
         self._print_progress_bars()
         # call parent method
-        super(MPpbar, self).execute_run()
+        super().execute_run()
 
     def final(self):
         """ print final progress bars and show cursor
@@ -85,7 +82,7 @@ class MPpbar(MPmq):
         """
         logger.debug('creating progress bars')
         self._progress_bars = []
-        for offset in range(len(self.process_data)):
+        for offset, _ in enumerate(self.process_data):
             progress_bar = ProgressBar(offset, fill=self.fill, regex=self.regex, control=True)
             self._progress_bars.append(progress_bar)
 
@@ -103,7 +100,7 @@ class MPpbar(MPmq):
         """ print all progress bars
         """
         logger.info('printing progress bars')
-        for offset in range(len(self._progress_bars)):
+        for offset, _ in enumerate(self._progress_bars):
             if add_duration:
                 self._progress_bars[offset].duration = self.processes.get(offset, {}).get('duration')
             self._print_progress_bar(offset, force=force)

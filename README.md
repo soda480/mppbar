@@ -1,5 +1,6 @@
 # mppbar
-[![build](https://github.com/soda480/mppbar/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/soda480/mppbar/actions/workflows/main.yml)
+[![build](https://github.com/soda480/mppbar/actions/workflows/main.yml/badge.svg)](https://github.com/soda480/mppbar/actions/workflows/main.yml)
+[![Code Grade](https://api.codiga.io/project/33815/status/svg)](https://app.codiga.io/public/project/33815/mppbar/dashboard)
 [![vulnerabilities](https://img.shields.io/badge/vulnerabilities-None-brightgreen)](https://pypi.org/project/bandit/)
 [![python](https://img.shields.io/badge/python-3.9-teal)](https://www.python.org/downloads/)
 
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 
 #### [example3](https://github.com/soda480/mppbar/blob/main/examples/example3.py)
 
-Distribute alot of work across a small set of processes using a thread-safe queue, each process get work off the queue until there is no more work, all processes reuse a progress bar to show its execution status. Useful if you can only afford to run a few background processes concurrently but have alot of data to distribute across each worker.
+Distribute alot of work across a small set of processes using a thread-safe queue, each process get work off the queue until there is no more work, all processes reuse a progress bar to show its execution status. Useful if you have alot of data to distribute across a small set of workers.
 ```Python
 from mppbar import MPpbar
 import time, names, random, logging
