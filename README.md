@@ -9,6 +9,7 @@ The mppbar module provides a convenient way to scale execution of a function acr
 
 The MPpbar class is a subclass of [MPmq](https://pypi.org/project/mpmq/) and the primary benefit of using `mppbar` is that the function being scaled requires minimal modification (if at all) since the multiprocessing and progress bar are completely abstracted. The progress bar is initialized and updated through the interception and processing of the messages logged within the function. The log messages in the function must use f-string style formatting.
 
+
 ### Installation
 ```bash
 pip install mppbar
