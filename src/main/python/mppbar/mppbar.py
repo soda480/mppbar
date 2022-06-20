@@ -1,10 +1,12 @@
 import re
 import sys
 import logging
-from colorama import Cursor, init as colorama_init
+from colorama import Cursor
+from colorama import init as colorama_init
 import cursor
 from mpmq import MPmq
 from progress1bar import ProgressBar
+from l2term import Lines
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +24,8 @@ class MPpbar(MPmq):
         # call parent constructor
         super().__init__(*args, **kwargs)
         colorama_init()
-        self._current = 0
         self._create_progress_bars()
+        self._lines = Lines(self._progress_bars)
 
     def get_message(self):
         """ return message from top of message queue
@@ -42,6 +44,14 @@ class MPpbar(MPmq):
             logger.debug(f'unable to match offset in message {message}')
         return message
 
+    def complete_process(self, offset):
+        """ set progress bar to complete and print line out on terminal
+            override parent class method
+        """
+        super().complete_process(offset)
+        self._progress_bars[offset].complete = True
+        self._lines.print_line(offset)
+
     def process_message(self, offset, message):
         """ write message to terminal at offset
             override parent class method
@@ -56,16 +66,17 @@ class MPpbar(MPmq):
             for progress_bar in self._progress_bars:
                 progress_bar.complete = True
         else:
-            self._progress_bars[offset].match(message)
-            self._print_progress_bar(offset)
+            match = self._progress_bars[offset].match(message)
+            if match:
+                self._lines.print_line(offset)
 
     def execute_run(self):
         """ hide cursor and print initial progress bars
             override parent class method
         """
         logger.debug('executing run task wrapper')
-        self._hide_cursor()
-        self._print_progress_bars()
+        self._lines.hide_cursor()
+        self._lines.print_lines()
         # call parent method
         super().execute_run()
 
@@ -74,69 +85,16 @@ class MPpbar(MPmq):
             override parent class method
         """
         logger.debug('executing final task')
-        self._print_progress_bars(add_duration=True, force=True)
-        self._show_cursor()
+        for index, progress_bar in enumerate(self._progress_bars):
+            progress_bar.duration = self.processes[index]['duration']
+        self._lines.print_lines(force=True)
+        self._lines.show_cursor()
 
     def _create_progress_bars(self):
         """ create and return list of progress bars
         """
         logger.debug('creating progress bars')
         self._progress_bars = []
-        for offset, _ in enumerate(self.process_data):
-            progress_bar = ProgressBar(offset, fill=self.fill, regex=self.regex, control=True)
+        for _, _ in enumerate(self.process_data):
+            progress_bar = ProgressBar(fill=self.fill, regex=self.regex, control=True)
             self._progress_bars.append(progress_bar)
-
-    def _print_progress_bar(self, offset, force=False):
-        """ move to offset and print progress bar at offset
-        """
-        if sys.stderr.isatty() or force:
-            move_char = self._get_move_char(offset)
-            print(f'{move_char}{CLEAR_EOL}', end='', file=sys.stderr)
-            print(self._progress_bars[offset], file=sys.stderr)
-            sys.stderr.flush()
-            self._current += 1
-
-    def _print_progress_bars(self, add_duration=False, force=False):
-        """ print all progress bars
-        """
-        logger.info('printing progress bars')
-        for offset, _ in enumerate(self._progress_bars):
-            if add_duration:
-                self._progress_bars[offset].duration = self.processes.get(offset, {}).get('duration')
-            self._print_progress_bar(offset, force=force)
-
-    def _get_move_char(self, offset):
-        """ return char to move to offset
-        """
-        move_char = ''
-        if offset < self._current:
-            move_char = self._move_up(offset)
-        elif offset > self._current:
-            move_char = self._move_down(offset)
-        return move_char
-
-    def _move_down(self, offset):
-        """ return char to move down to offset and update current
-        """
-        diff = offset - self._current
-        self._current += diff
-        return Cursor.DOWN(diff)
-
-    def _move_up(self, offset):
-        """ return char to move up to offset and update current
-        """
-        diff = self._current - offset
-        self._current -= diff
-        return Cursor.UP(diff)
-
-    def _show_cursor(self):
-        """ show cursor
-        """
-        if sys.stderr.isatty():
-            cursor.show()
-
-    def _hide_cursor(self):
-        """ hide cursor
-        """
-        if sys.stderr.isatty():
-            cursor.hide()
