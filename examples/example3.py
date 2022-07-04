@@ -7,10 +7,10 @@ logger = logging.getLogger(__name__)
 
 def do_work(total):
     # log our intentions - messages will be intercepted as designated by MPpbar regex
-    logger.debug(f'processor is {names.get_last_name()}')
-    logger.debug(f'processing total of {total}')
+    logger.debug(f'worker is {names.get_last_name()}')
+    logger.debug(f'processing total of {total} items')
     for index in range(total):
-        # simulae work by sleeping
+        # simulate work by sleeping
         time.sleep(random.choice([.001, .003, .005]))
         logger.debug(f'processed item {index}')
     return total
@@ -18,8 +18,8 @@ def do_work(total):
 def prepare_queue():
     # create queue to add all the work that needs to be done
     queue = Queue()
-    for _ in range(100):
-        queue.put({'total': random.randint(40, 99)})
+    for _ in range(75):
+        queue.put({'total': random.randint(100, 150)})
     return queue
 
 def run_q(data, *args):
@@ -42,16 +42,10 @@ def main():
     queue = prepare_queue()
     # designate 3 processes total - each getting reference to the queue
     process_data = [{'queue': queue} for item in range(3)]
-    # supply regex to intercept and set values for total count and alias
-    regex = {
-        'total': r'^processing total of (?P<value>\d+)$',
-        'count': r'^processed item \d+$',
-        'alias': r'^processor is (?P<value>.*)$',
-    }
-    print('>> Processing items...')
-    pbars =  MPpbar(function=run_q, process_data=process_data, regex=regex, timeout=1)
+    print(f'>> Processing {queue.qsize()} totals using {len(process_data)} workers ...')
+    pbars =  MPpbar(function=run_q, process_data=process_data, timeout=1, show_prefix=False, show_percentage=False)
     results = pbars.execute()
-    # add up totals from all processes
+    # add up results from all workers
     print(f">> {len(process_data)} workers processed a total of {sum(result for result in results)} items")
 
 if __name__ == '__main__':

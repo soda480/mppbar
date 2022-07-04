@@ -30,7 +30,14 @@ MPpbar(function, process_data=None, shared_data=None, processes_to_start=None, r
 
 > `processes_to_start` - The number of processes to initially start; this represents the number of concurrent processes that will be running. If the total number of processes is greater than this number then the remaining processes will be queued and executed to ensure this concurrency is maintained. Defaults to the length of the `process_data` lsit.
 
-> `regex` - A dictionary whose key values are regular expressions for `total`, `count` and `alias`. The regular expressions will be checked against the log messages intercepted from the executing function, if matched the value will be used to assign the attribute for the respective progress bar. The `total` and `count` key values are required, the `alias` key value is optional.
+> `regex` - A dictionary whose key values are regular expressions for `total`, `count` and `alias`. The regular expressions will be checked against the log messages intercepted from the executing function, if matched the value will be used to assign the attribute for the respective progress bar. The `total` and `count` key values are required, the `alias` key value is optional. The default `regex` is: 
+```
+{
+    'total': r'^processing total of (?P<value>\d+) items$',
+    'count': r'^processed .*$',
+    'alias': r'^worker is (?P<value>.*)$'
+}
+```
 
 > `fill` - A dictionary whose key values are integers that dictate the number of leading zeros the progress bar should add to the `total`, `index` and `completed` values; this is optional and should be used to format the progress bar appearance. The supported key values are `max_total`, `max_index` and `max_completed`.
 
@@ -43,7 +50,7 @@ MPpbar(function, process_data=None, shared_data=None, processes_to_start=None, r
 
 #### [example1](https://github.com/soda480/mppbar/blob/main/examples/example1.py)
 
-Distribute work across multiple processes with all executing concurrently, each displays a progress bar showing its execution status.
+Distribute work across multiple processes with all executing concurrently, each displays a progress bar showing its execution status. Uses default regex for assigning progress bar attributes.
 
 <details><summary>Code</summary>
 
@@ -55,11 +62,11 @@ logger = logging.getLogger(__name__)
 
 def do_work(data, *args):
     # log our intentions - messages will be intercepted as designated by MPpbar regex
-    logger.debug(f'processor is {names.get_last_name()}')
+    logger.debug(f'worker is {names.get_last_name()}')
     total = data['total']
-    logger.debug(f'processing total of {total}')
+    logger.debug(f'processing total of {total} items')
     for index in range(total):
-        # simulae work by sleeping
+        # simulate work by sleeping
         time.sleep(random.choice([.1, .2, .4]))
         logger.debug(f'processed item {index}')
     return total
@@ -67,14 +74,8 @@ def do_work(data, *args):
 def main():
     # designate 6 processes total - each getting a different total
     process_data = [{'total': random.randint(8, 16)} for item in range(6)]
-    # supply regex to intercept and set values for total count and alias
-    regex = {
-        'total': r'^processing total of (?P<value>\d+)$',
-        'count': r'^processed item \d+$',
-        'alias': r'^processor is (?P<value>.*)$',
-    }
-    print('>> Processing items...')
-    pbars =  MPpbar(function=do_work, process_data=process_data, regex=regex, timeout=1)
+    print(f'>> Processing items using {len(process_data)} workers ...')
+    pbars =  MPpbar(function=do_work, process_data=process_data, timeout=1)
     results = pbars.execute()
     # add up totals from all processes
     print(f">> {len(process_data)} workers processed a total of {sum(result for result in results)} items")
@@ -89,7 +90,7 @@ if __name__ == '__main__':
 
 #### [example2](https://github.com/soda480/mppbar/blob/main/examples/example2.py)
 
-Distribute work across multiple processes but only a subset are executing concurrently, each displays a progress bar showing its execution status. Useful if you can only afford to run a few processes concurrently.
+Distribute work across multiple processes but only a subset are executing concurrently, each displays a progress bar showing its execution status. Useful if you can only afford to run a few processes concurrently. Uses custom regex for assigning progress bar attributes.
 
 <details><summary>Code</summary>
 
@@ -105,7 +106,7 @@ def do_work(data, *args):
     total = data['total']
     logger.debug(f'processing total of {total}')
     for index in range(total):
-        # simulae work by sleeping
+        # simulate work by sleeping
         time.sleep(random.choice([.1, .2, .4]))
         logger.debug(f'processed item {index}')
     return total
@@ -113,7 +114,7 @@ def do_work(data, *args):
 def main():
     # designate 6 processes total - each getting a different total
     process_data = [{'total': random.randint(8, 16)} for item in range(6)]
-    # supply regex to intercept and set values for total count and alias
+    # supply custom regex to intercept and set values for total count and alias
     regex = {
         'total': r'^processing total of (?P<value>\d+)$',
         'count': r'^processed item \d+$',
@@ -123,9 +124,9 @@ def main():
     fill = {
         'max_total': 100
     }
-    print('>> Processing items...')
+    print(f'>> Processing items using {len(process_data)} workers ...')
     # set concurrency to 3 - max of 3 processes will be running at any given time
-    pbars =  MPpbar(function=do_work, process_data=process_data, regex=regex, fill=fill, processes_to_start=3, timeout=1)
+    pbars =  MPpbar(function=do_work, process_data=process_data, regex=regex, fill=fill, processes_to_start=3, timeout=1, show_fraction=False)
     results = pbars.execute()
     # add up totals from all processes
     print(f">> {len(process_data)} workers processed a total of {sum(result for result in results)} items")
@@ -154,10 +155,10 @@ logger = logging.getLogger(__name__)
 
 def do_work(total):
     # log our intentions - messages will be intercepted as designated by MPpbar regex
-    logger.debug(f'processor is {names.get_last_name()}')
-    logger.debug(f'processing total of {total}')
+    logger.debug(f'worker is {names.get_last_name()}')
+    logger.debug(f'processing total of {total} items')
     for index in range(total):
-        # simulae work by sleeping
+        # simulate work by sleeping
         time.sleep(random.choice([.001, .003, .005]))
         logger.debug(f'processed item {index}')
     return total
@@ -165,8 +166,8 @@ def do_work(total):
 def prepare_queue():
     # create queue to add all the work that needs to be done
     queue = Queue()
-    for _ in range(100):
-        queue.put({'total': random.randint(40, 99)})
+    for _ in range(75):
+        queue.put({'total': random.randint(100, 150)})
     return queue
 
 def run_q(data, *args):
@@ -189,16 +190,10 @@ def main():
     queue = prepare_queue()
     # designate 3 processes total - each getting reference to the queue
     process_data = [{'queue': queue} for item in range(3)]
-    # supply regex to intercept and set values for total count and alias
-    regex = {
-        'total': r'^processing total of (?P<value>\d+)$',
-        'count': r'^processed item \d+$',
-        'alias': r'^processor is (?P<value>.*)$',
-    }
-    print('>> Processing items...')
-    pbars =  MPpbar(function=run_q, process_data=process_data, regex=regex, timeout=1)
+    print(f'>> Processing {queue.qsize()} totals using {len(process_data)} workers ...')
+    pbars =  MPpbar(function=run_q, process_data=process_data, timeout=1, show_prefix=False, show_percentage=False)
     results = pbars.execute()
-    # add up totals from all processes
+    # add up results from all workers
     print(f">> {len(process_data)} workers processed a total of {sum(result for result in results)} items")
 
 if __name__ == '__main__':
@@ -228,7 +223,7 @@ docker container run \
 -it \
 -v $PWD:/code \
 mppbar:latest \
-/bin/bash
+bash
 ```
 
 Execute the build:
