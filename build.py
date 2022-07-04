@@ -15,7 +15,7 @@ name = 'mppbar'
 authors = [Author('Emilio Reyes', 'soda480@gmail.com')]
 summary = 'A multi-processing enabled progress bar.'
 url = 'https://github.com/soda480/mppbar'
-version = '0.1.2'
+version = '0.1.3'
 default_task = [
     'clean',
     'analyze',
@@ -36,7 +36,7 @@ def set_properties(project):
     project.set_property('flake8_break_build', True)
     project.set_property('flake8_include_scripts', True)
     project.set_property('flake8_include_test_sources', True)
-    project.set_property('flake8_ignore', 'F401, E501')  # W503, F401')
+    project.set_property('flake8_ignore', 'F401, E501')
     project.build_depends_on('mock')
     project.depends_on_requirements('requirements.txt')
     project.set_property('distutils_readme_description', True)
@@ -55,6 +55,7 @@ def set_properties(project):
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Networking',

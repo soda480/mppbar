@@ -17,14 +17,18 @@ CLEAR_EOL = '\033[K'
 class MPpbar(MPmq):
     """ a subclass of MPmq providing multi-processing enabled progress bars
     """
-    def __init__(self, *args, regex=None, fill=None, **kwargs):
+    regex = {
+        'total': r'^processing total of (?P<value>\d+) items$',
+        'count': r'^processed .*$',
+        'alias': r'^worker is (?P<value>.*)$'
+    }
+
+    def __init__(self, function, process_data=None, shared_data=None, processes_to_start=None, timeout=None, **kwargs):
         logger.debug('executing MPpbar constructor')
-        self.regex = regex
-        self.fill = fill
         # call parent constructor
-        super().__init__(*args, **kwargs)
+        super().__init__(function, process_data=process_data, shared_data=shared_data, processes_to_start=processes_to_start, timeout=timeout)
         colorama_init()
-        self._create_progress_bars()
+        self._progress_bars = self._create_progress_bars(kwargs)
         self._lines = Lines(self._progress_bars)
 
     def get_message(self):
@@ -90,11 +94,16 @@ class MPpbar(MPmq):
         self._lines.print_lines(force=True)
         self._lines.show_cursor()
 
-    def _create_progress_bars(self):
+    def _create_progress_bars(self, kwargs):
         """ create and return list of progress bars
         """
         logger.debug('creating progress bars')
-        self._progress_bars = []
+        # progress bar printing will be controlled externally by the MPpbars class
+        kwargs['control'] = True
+        if not kwargs.get('regex'):
+            # assign default progress bar
+            kwargs['regex'] = MPpbar.regex
+        progress_bars = []
         for _, _ in enumerate(self.process_data):
-            progress_bar = ProgressBar(fill=self.fill, regex=self.regex, control=True)
-            self._progress_bars.append(progress_bar)
+            progress_bars.append(ProgressBar(**kwargs))
+        return progress_bars
