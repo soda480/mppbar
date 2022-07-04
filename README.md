@@ -17,7 +17,7 @@ pip install mppbar
 
 ### `MPpbar class`
 ```
-MPpbar(function, process_data=None, shared_data=None, processes_to_start=None, regex=None, fill=None)
+MPpbar(function, process_data=None, shared_data=None, processes_to_start=None, regex=None, **kwargs)
 ```
 
 <details><summary>Documentation</summary>
@@ -39,7 +39,7 @@ MPpbar(function, process_data=None, shared_data=None, processes_to_start=None, r
 }
 ```
 
-> `fill` - A dictionary whose key values are integers that dictate the number of leading zeros the progress bar should add to the `total`, `index` and `completed` values; this is optional and should be used to format the progress bar appearance. The supported key values are `max_total`, `max_index` and `max_completed`.
+> `**kwargs` - Pass through any other supported ProgressBar keyword argument, refer to [progress bar](https://pypi.org/project/progress1bar/) for supported arguments.
 
 > **execute(raise_if_error=False)**
 >> Start execution the process’s activity. If `raise_if_error` is set to True, an exception will be raised if the function encounters an error during execution.
