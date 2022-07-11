@@ -3,12 +3,11 @@
 [![Code Grade](https://api.codiga.io/project/33815/status/svg)](https://app.codiga.io/public/project/33815/mppbar/dashboard)
 [![vulnerabilities](https://img.shields.io/badge/vulnerabilities-None-brightgreen)](https://pypi.org/project/bandit/)
 [![PyPI version](https://badge.fury.io/py/mppbar.svg)](https://badge.fury.io/py/mppbar)
-[![python](https://img.shields.io/badge/python-3.9-teal)](https://www.python.org/downloads/)
+[![python](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-teal)](https://www.python.org/downloads/)
 
 The mppbar module provides a convenient way to scale execution of a function across multiple input values by distributing the input across a number of background processes, it displays the execution status of each background process using a [progress bar](https://pypi.org/project/progress1bar/).
 
 The MPpbar class is a subclass of [MPmq](https://pypi.org/project/mpmq/) and the primary benefit of using `mppbar` is that the function being scaled requires minimal modification (if at all) since the multiprocessing and progress bar are completely abstracted. The progress bar is initialized and updated through the interception and processing of the messages logged within the function. The log messages in the function must use f-string style formatting.
-
 
 ### Installation
 ```bash

@@ -15,7 +15,7 @@ name = 'mppbar'
 authors = [Author('Emilio Reyes', 'soda480@gmail.com')]
 summary = 'A multi-processing enabled progress bar.'
 url = 'https://github.com/soda480/mppbar'
-version = '0.1.3'
+version = '0.1.4'
 default_task = [
     'clean',
     'analyze',
@@ -51,7 +51,6 @@ def set_properties(project):
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
@@ -64,4 +63,3 @@ def set_properties(project):
     project.set_property('radon_break_build_complexity_threshold', 10)
     project.set_property('bandit_break_build', True)
     project.set_property('anybadge_exclude', 'coverage, complexity')
-    project.set_property('anybadge_use_shields', True)
