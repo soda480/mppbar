@@ -6,7 +6,7 @@ from colorama import init as colorama_init
 import cursor
 from mpmq import MPmq
 from progress1bar import ProgressBar
-from l2term import Lines
+from list2term import Lines
 
 logger = logging.getLogger(__name__)
 

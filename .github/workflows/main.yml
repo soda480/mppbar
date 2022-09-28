@@ -31,26 +31,3 @@ jobs:
         with:
           name: image
           path: images/mppbar-${{ matrix.version }}.tar
-  # coverage:
-  #   name: Publish Code Coverage Report
-  #   needs: build-images
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: download image artifact
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: image
-  #         path: images/
-  #     - name: load image
-  #       run:
-  #         docker load --input images/mppbar-3.9.tar
-  #     - name: prepare report
-  #       run: |
-  #         ID=$(docker create mppbar:3.9)
-  #         docker cp $ID:/code/target/reports/mppbar_coverage.xml mppbar_coverage.xml
-  #         sed -i -e 's,filename="mppbar/,filename="src/main/python/mppbar/,g' mppbar_coverage.xml
-  #     - name: upload report
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
-  #         file: mppbar_coverage.xml
