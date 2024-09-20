@@ -19,6 +19,4 @@ jobs:
       - uses: actions/checkout@v4
       - name: build mppbar ${{ matrix.version }} image
         run:
-          docker image build \
-            --build-arg PYTHON_VERSION=${{ matrix.version }} \
-            -t mppbar:${{ matrix.version }} .
+          docker image build --build-arg PYTHON_VERSION=${{ matrix.version }} -t mppbar:${{ matrix.version }} .
