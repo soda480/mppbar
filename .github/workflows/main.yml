@@ -16,18 +16,9 @@ jobs:
     name: Build Python Docker images
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build mppbar ${{ matrix.version }} image
         run:
-          docker image build --build-arg PYTHON_VERSION=${{ matrix.version }} -t mppbar:${{ matrix.version }} .
-      - name: save mppbar ${{ matrix.version }} image
-        if: ${{ matrix.version == '3.9' }}
-        run: |
-          mkdir -p images
-          docker save --output images/mppbar-${{ matrix.version }}.tar mppbar:${{ matrix.version }}
-      - name: upload mppbar ${{ matrix.version }} image artifact
-        if: ${{ matrix.version == '3.9' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: image
-          path: images/mppbar-${{ matrix.version }}.tar
+          docker image build \
+            --build-arg PYTHON_VERSION=${{ matrix.version }} \
+            -t mppbar:${{ matrix.version }} .
